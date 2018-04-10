@@ -1159,6 +1159,14 @@ static cs_error_t send_fragments (
 							 &res_lib_cpg_partial_send,
 							 sizeof (res_lib_cpg_partial_send));
 
+		if (msg_len == 40 * 1024 * 1024 && sent >= msg_len / 2)
+		{
+			// Fake CS_ERR_TRY_AGAIN happening in the middle of message sending
+			// we will use exactly 40MB message to trigger this.
+			error = CS_ERR_TRY_AGAIN;
+			goto error_exit;
+		}
+
 		if (error == CS_ERR_TRY_AGAIN) {
 			fprintf(stderr, "sleep. counter=%d\n", retry_count);
 			if (++retry_count > MAX_RETRIES) {
